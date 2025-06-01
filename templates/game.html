@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sokoban Game</title>
+    <style>
+        body { font-family: monospace; text-align: center; background-color: #f0f0f0; }
+        #board {
+            font-family: monospace;   /* Monospaced font like <pre> */
+            font-size: 1.6rem;         /* Adjust as needed */
+            white-space: pre;          /* Preserve spaces and line breaks */
+            line-height: 1.1;          /* Optional, for tighter spacing */
+            overflow-x: auto;          /* Enable horizontal scrolling if needed */
+        }
+
+        button, select { margin: 10px; padding: 10px 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h2>🧩 Sokoban Game - Level {{ level }}</h2>
+    <div id="board">Loading...</div>
+    <div id="message" style="font-size: 1.2rem; color: green;"></div>
+    <br>
+    <button onclick="resetGame()">🔄 Reset</button>
+    <label for="level">Level: </label>
+    <select id="level" onchange="changeLevel(this.value)">
+        <option value="1" {% if level == 1 %}selected{% endif %}>1</option>
+        <option value="2" {% if level == 2 %}selected{% endif %}>2</option>
+        <option value="3" {% if level == 3 %}selected{% endif %}>3</option>
+    </select>
+
+    <script>
+        function fetchState() {
+            fetch('/state')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('board').textContent = data.board;
+                    document.getElementById('message').textContent = data.game_over ? "🎉 Game Over!" : "";
+                });
+        }
+
+        function move(direction) {
+            fetch('/move', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ direction })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('board').textContent = data.board;
+                document.getElementById('message').textContent = data.game_over ? "🎉 Game Over!" : "";
+            });
+        }
+
+        function resetGame() {
+            window.location.href = '/reset';
+        }
+
+        function changeLevel(level) {
+            window.location.href = '/?level=' + level;
+        }
+
+        document.addEventListener('keydown', function(e) {
+            const keyMap = {
+                ArrowUp: 'up',
+                ArrowDown: 'down',
+                ArrowLeft: 'left',
+                ArrowRight: 'right'
+            };
+            if (keyMap[e.key]) {
+                e.preventDefault();
+                move(keyMap[e.key]);
+            }
+        });
+
+        fetchState();
+    </script>
+</body>
+</html>
