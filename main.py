@@ -7,7 +7,7 @@ app.secret_key = "secret-key"
 
 LEVELS = {}
 
-for i in range(1, 4):
+for i in range(1, 6):
     with open(f"sokoban/level{i}.txt") as file:
         lines = file.readlines()
         LEVELS[i] = list(list(line.strip()) for line in lines)
