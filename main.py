@@ -90,7 +90,7 @@ def move():
     game = SokobanGame(session["level"])
     game.move(direction)
     session["level"] = game.level
-    return jsonify({"board": game.display(), "game_over": game.is_game_over()})
+    return jsonify ({"board": game.display(), "game_over": game.is_game_over()})
 
 
 @app.route("/reset")
